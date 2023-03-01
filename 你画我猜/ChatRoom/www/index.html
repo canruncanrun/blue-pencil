@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .box {
+            width: 100%;
+            height: 100vh;
+            /* border: 1px solid #ccc; */
+
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .left_box {
+            display: inline-block;
+            width: 1024px;
+            height: 600px;
+
+
+            flex-shrink: 0;
+        }
+
+        .right_box {
+            display: inline-block;
+            width: 450px;
+            height: 700px;
+
+
+            margin-left: 25px;
+        }
+
+        .body {
+            display: flex;
+        }
+
+
+
+        .right_box main {
+            width: 400px;
+            height: 520px;
+            background-color: rgb(255, 212, 191);
+            border-radius: 10px;
+            border: 1px solid transparent;
+            margin: 10px auto;
+            padding: 10px;
+        }
+
+        .right_box div {
+
+            height: 460px;
+            background-color: #fff;
+            padding: 0;
+            margin: 0;
+
+            box-sizing: border-box;
+        }
+
+        .right_box input {
+            margin-top: 10px;
+            margin-left: 5px;
+            width: 330px;
+            height: 35px;
+            box-sizing: border-box;
+        }
+
+        .right_box button {
+            width: 50px;
+            height: 35px;
+        }
+
+        .right_box p {
+            text-align: center;
+        }
+
+        .canvas_box {
+            width: 1024px;
+            height: 450px;
+            border: 1px solid #ccc;
+
+        }
+
+        .color_box {
+            width: 100%;
+            height: 40px;
+            border: 1px solid green;
+            border-radius: 5px;
+            line-height: 40px;
+            /* font-size: 0; */
+            /* position: relative; */
+        }
+
+        .width_box {
+            margin-top: 2px;
+            width: 100%;
+            height: 45px;
+            border: 1px solid green;
+            border-radius: 5px;
+            /* display: flex; */
+            line-height: 45px;
+
+
+        }
+
+        .color_box span {
+            display: inline-block;
+            width: 30px;
+            margin: 5px;
+            height: 30px;
+            /* font-size: 12px; */
+
+        }
+
+        .color_box span:first-child {
+            /* display: inline-block; */
+
+            /* margin-top: -50px; */
+            /* font-size: 12px; */
+            position: relative;
+            top: -15px;
+
+        }
+
+        .btn_box {
+            width: 77%;
+            display: inline-block;
+            text-align: right;
+            /* background-color: red; */
+        }
+
+        .btn_box button {
+            background-color: aquamarine;
+            padding: 5px;
+            margin-right: 5px;
+        }
+
+        .info_box {
+            margin-top: 10px;
+            display: flex;
+
+        }
+
+        .info_box p {
+            text-align: center;
+
+        }
+
+        .player_box {
+            width: 300px;
+            /* height: 300px; */
+            border: 1px solid #ccc;
+        }
+
+        .gameInfo_box {
+            width: 450px;
+            height: 300px;
+            border: 1px solid #ccc;
+            margin: 0 20px;
+        }
+
+        .chart_box {
+            width: 450px;
+            height: 300px;
+            border: 1px solid #ccc;
+
+        }
+
+        .active {
+            border: 2px solid rgb(7, 0, 7);
+        }
+
+        #msg_box {
+            overflow-y: scroll;
+
+        }
+
+        #msg_box p {
+            text-align: left;
+            border-bottom: 1px solid #ccc;
+            padding: 10px;
+        }
+
+        .player_list {
+            width: 100%;
+            height: 150px;
+            overflow-y: scroll;
+            border-top: 1px solid #ccc;
+            border-bottom: 1px solid #ccc;
+        }
+        .wanjia {
+            display: flex;
+            justify-content: space-around;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box">
+        <h1>实时 你画我猜</h1>
+        <div class="body">
+            <!-- 左边 -->
+            <div class="left_box">
+                <!-- 画布 -->
+                <div class="canvas_box">
+                    <canvas id="cv" width="1024" height="450"></canvas>
+                </div>
+                <!-- 颜色 -->
+                <div class="color_box">
+                    <span style="width: 60px;">颜色：</span>
+                </div>
+                <!-- 线宽 -->
+                <div class="width_box">
+                    <span>线宽：</span> &#x3000;<input class="lineWidth" type="range" min="0" max="15">
+                    <div class="btn_box">
+                        <button>画笔</button>
+                        <button id="eraser">橡皮擦</button>
+
+                        <button id="clbtn">清空</button>
+                        <button>下载</button>
+
+                    </div>
+                </div>
+                <!-- 游戏信息 -->
+                <div class="info_box">
+                    <div class="player_box">
+                        <p>上场玩家</p>
+                        <div class="player_list">
+
+                        </div>
+                        <p class="player_btn">
+                            <button class="player_on">上场</button>
+                            <button>自动上场</button>
+                        </p>
+                    </div>
+                    <div class="gameInfo_box">
+                        <p>信息栏</p>
+                        <p><span>绘图玩家：</span><span class="player_name"></span></p>
+                        <p><span>剩余时间：</span><span class="player_time"></span></p>
+                        <p><span>关键词语：</span><span class="player_wrod"></span></p>
+
+                    </div>
+                    <div class="chart_box">
+                        <p>排行榜</p>
+                        <div class="chart_item">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 右边 -->
+            <div class="right_box">
+                <main>
+                    <p>消息框</p>
+                    <div id="msg_box"></div>
+                    <input type="text" id="msg">
+                    <button id="send">发送</button>
+                </main>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="./jquery-3.5.1.js">
+
+</script>
+<script>
+    let target = null
+    var user_name = prompt("请输入名字")
+    var lspalyer = false
+    if (user_name.trim()) {
+        // 在客户端程序创建一个 websocket 链接到服务器上
+        ws = new WebSocket("ws://127.0.0.1:3000/" + user_name)
+        // 监听链接成功后的回调函数
+        ws.onopen = function () {
+            console.log("链接成功");
+            // $("#in").prop("disabled",true)
+        }
+
+        ws.onmessage = function (res) {
+
+
+            let dataObj = JSON.parse(res.data)
+            switch (dataObj.type) {
+                case "welcome":
+                    {
+                        let $p = $("<p style=color:red;></p>").text(dataObj.content)
+                        $("#msg_box").append($p)
+                    }
+                    break
+                case "group":
+                    {
+                        let $name = $("<span class='nickname'></span>").text(dataObj.nickname)
+                        let $content = $("<span></span>").text("：" + dataObj.content)
+                        let $p = $("<p></p>").attr("title", dataObj.ip).append($name).append($content)
+
+                        $("#msg_box").append($p)
+                    }
+                    break
+                case "in-out":
+                    {
+
+
+                        let $p = $("<p style=color:red;></p>").text(dataObj.content)
+                        $("#msg_box").append($p)
+                    }
+                    break
+                // 移动
+                case "move":
+                    // ctx.strokeStyle = dataObj.colors;
+                    // ctx.lineWidth = dataObj.lineWidth
+                    // // ctx.beginPath();
+                    // // ctx.moveTo(dataObj.moveTo.x, dataObj.lineTo.y);
+                    ctx.lineTo(dataObj.lineTo.x, dataObj.lineTo.y);
+                    ctx.stroke();
+                    break
+                // 按下
+                case "down":
+
+                    ctx.strokeStyle = dataObj.colors;
+                    ctx.lineWidth = dataObj.lineWidth
+                    ctx.beginPath();
+                    ctx.moveTo(dataObj.moveTo.x, dataObj.lineTo.y);
+                    // ctx.lineTo(dataObj.lineTo.x, dataObj.lineTo.y);
+                    ctx.stroke();
+                    break
+                case "clearRect":
+
+                    ctx.clearRect(0, 0, 1024, 450);
+                    break
+                case "eraser":
+
+                    ctx.clearRect(dataObj.lineTo.x, dataObj.lineTo.y, dataObj.lineWidth, dataObj.lineWidth);
+                    break
+                case "playerTop":
+                    // console.log(dataObj);
+                    var div1 = ''
+                    for (var index = 0; index < dataObj.playerTopList.length; index++) {
+                        // const element = array[index];
+
+                        div1 += `<p style=color:red;>${dataObj.playerTopList[index]}</p>`
+                    }
+                    let name = dataObj.name
+                    if (dataObj.name == user_name) {
+                        name = name + '(自己)'
+                    }
+                    $(".player_name").text(name)
+                    $(".player_time").text(dataObj.time)
+                    $(".player_list").html(div1)
+
+                    break
+                case "playerTop2":
+                    console.log(dataObj);
+                    var div1 = ''
+                    for (var index = 0; index < dataObj.playerTopList.length; index++) {
+                        // const element = array[index];
+
+                        div1 += `<p style=color:red;>${dataObj.playerTopList[index]}</p>`
+                    }
+                    $(".player_name").text(dataObj.name)
+                    $(".player_time").text(dataObj.time)
+                    $(".player_list").html(div1)
+                    $(".player_wrod").text('')
+
+                    break
+                case "isplayerTop":
+                    // console.log();
+                    lspalyer = dataObj.isplayerTop
+                    console.log(111, dataObj.wrod);
+                    if (dataObj.isplayerTop) {
+                        $(".player_wrod").text(dataObj.wrod.word)
+                    }
+                    break
+                    // 上场列表
+                case "playerList":
+                    console.log(333, dataObj);
+                    var div2 = ''
+                    for (var index = 0; index < dataObj.nameList.length; index++) {
+                        div2 += `<p class= " wanjia"><span>${dataObj.nameList[index].name}</span> <span>${dataObj.nameList[index].num}次</span> </p>`
+                    }
+                    $(".chart_item").html(div2)
+                    break
+            }
+            let chatBox = $("#msg_box")[0]
+            if (chatBox.scrollTop + chatBox.clientHeight <= chatBox.scrollHeight) {
+                chatBox.scrollTop = chatBox.scrollHeight - chatBox.clientHeight
+            }
+        }
+
+
+
+    } else {
+        user_name = prompt("必须输入名字")
+    }
+    window.onkeydown = function (e) {
+        if (e.keyCode === 13) {
+            sendMessage()
+        }
+    }
+
+
+    // 发送请求
+    $("#send").click(sendMessage)
+    function sendMessage() {
+        if (lspalyer) {
+            alert("您正在作画不可以说话哦")
+            $("#msg").val('')
+            return
+        }
+        if (!ws) {
+            alert("你已经断开链接，请重新加入")
+            return
+        }
+
+        let msg = $("#msg").val().trim();
+        if (!msg) {
+            alert("聊天内容不能为空")
+            return
+        }
+
+
+        // 群聊
+        ws.send(JSON.stringify({
+            type: "group",
+            data: msg
+        }))
+
+        $("#msg").val("")
+    }
+
+    // 创建颜色标签
+    let bgc = ["59,84,139", "34,12,67", "101,61,129", "114,189,194", "143,225,142", "170,125,33", "132,139,201", "253,49,102", "96,228,33", "56,220,239", "1,93,205", "125,217,78", "90,71,229", "77,115,6", "70,50,118"]
+    for (let i = 0; i < bgc.length; i++) {
+        var $color = $(`<span class="color" style='background-color:rgb(${bgc[i]})'></span>`)
+        $(".color_box").append($color)
+    }
+    $(".color").eq(0).addClass("active")
+    let cv = document.querySelector("#cv");
+    let ctx = cv.getContext("2d");
+    var colors = "rgb(59,84,139)";
+    ctx.lineCap = "round";
+
+    cv.onmousedown = function (e1) {
+        if (!lspalyer) {
+            return
+        }
+        // 鼠标按下
+        ws.send(JSON.stringify({
+            type: "down",
+            moveTo: { x: e1.pageX - cv.offsetLeft, y: e1.pageY - cv.offsetTop },
+            colors: colors,
+            lineWidth: $(".lineWidth").val(),
+
+        }))
+        document.onmousemove = function (e2) {
+            // console.log("移动");
+            let x = e2.pageX - cv.offsetLeft
+            let y = e2.pageY - cv.offsetTop
+
+            // 发送移动的请求
+            ws.send(JSON.stringify({
+                type: "move",
+
+                lineTo: { x, y }
+            }))
+            // ctx.stroke();
+        }
+    }
+
+    document.onmouseup = function () {
+        document.onmousemove = null;
+    }
+    // 改变颜色
+    $(".color").click(function () {
+
+        $(this).addClass("active");
+        $(this).siblings().removeClass("active");
+
+        colors = $(this).css("background-color");
+
+
+    })
+    // 清除
+    $("#clbtn").click(function () {
+        ws.send(JSON.stringify({
+            type: "clearRect",
+
+
+        }))
+
+    })
+    // 移动
+    $("#eraser").click(function () {
+        cv.onmousedown = function (e1) {
+
+
+            // ctx.moveTo(e1.pageX - cv.offsetLeft, e1.pageY - cv.offsetTop);
+            document.onmousemove = function (e2) {
+                // console.log("移动");
+                let x = e2.pageX - cv.offsetLeft
+                let y = e2.pageY - cv.offsetTop
+
+                // 发送移动的请求
+                ws.send(JSON.stringify({
+                    type: "eraser",
+                    lineWidth: $(".lineWidth").val(),
+                    lineTo: { x, y }
+                }))
+                // ctx.stroke();
+            }
+        }
+
+
+
+    })
+    // 点击上场
+    $(".player_on").click(function () {
+        // 吧名字传过去  吧名字添加 上场数组  如果是第一个 返回能画
+        console.log(111);
+        ws.send(JSON.stringify({
+            type: "playerTop",
+            name: user_name
+
+        }))
+    })
+    // 关闭
+    window.onbeforeunload = function () {
+        ws.close()
+        ws = null
+    }
+</script>
+
+</html>
